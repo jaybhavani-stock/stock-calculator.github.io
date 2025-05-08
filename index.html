@@ -1,69 +1,185 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="gu">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bhavani Shopping</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>જય ભવાની સ્ટોક કેલ્ક્યુલેટર</title>
 
-  <!-- ✅ Favicon (Make sure favicon.ico is in the same directory) -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <!-- ✅ Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 
-  <!-- ✅ Google Analytics (Measurement ID: G-2YZ2MBHDJN) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YZ2MBHDJN"></script>
+  <!-- ✅ Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-9YZZMBHDJN"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
-    gtag('config', 'G-2YZ2MBHDJN');
+    gtag('config', 'G-9YZZMBHDJN');
   </script>
 
-  <!-- ✅ Add any additional styles -->
+  <!-- ✅ CSS Styling -->
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      background-color: #f9f9f9;
-    }
-
-    header {
-      background-color: #2196f3;
-      color: white;
-      padding: 20px 0;
-    }
-
-    main {
-      padding: 40px 20px;
-    }
-
-    footer {
-      margin-top: 40px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
       padding: 20px;
-      background-color: #f1f1f1;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .inline-error {
+      color: #c62828;
+      font-size: 13px;
+      display: none;
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .result, .error {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .result {
+      background: #e0f7fa;
+    }
+    .error {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .username {
       font-size: 14px;
+      text-align: right;
+      color: #555;
     }
   </style>
 </head>
 <body>
 
-  <!-- ✅ Website Header -->
-  <header>
-    <h1>Welcome to Bhavani Shopping</h1>
-    <p>Best place to buy school items and more!</p>
-  </header>
+  <div class="container" id="nameContainer">
+    <h2><center>👤 તમારું નામ દાખલ કરો</center></h2>
+    <input type="text" id="userName" placeholder="તમારું નામ લખો" />
+    <button onclick="goToCalculator()">શરૂ કરો</button>
+  </div>
 
-  <!-- ✅ Main Content -->
-  <main>
-    <p>🛍️ Shop the best deals on school supplies here!</p>
-    <!-- Add more sections/products here -->
-  </main>
+  <div class="container" id="calculatorContainer" style="display: none;">
+    <div class="username" id="displayUserName"></div>
+    <h2><center>💹<b><i><u>જય ભવાની સ્ટોક કેલ્ક્યુલેટર</u></i></b></center></h2>
 
-  <!-- ✅ Footer -->
-  <footer>
-    &copy; 2025 Bhavani Shopping. All rights reserved.
-  </footer>
+    <label>🔹 ખરીદ કિંમત (Buy Price)</label>
+    <input type="number" id="buyPrice" placeholder="e.g. 120.50" step="0.01" />
 
+    <label>🔹 ખરીદ યુનિટ (Buy Quantity)</label>
+    <input type="number" id="buyQty" placeholder="Only integer value" step="1" />
+    <div class="inline-error" id="buyQtyError">❌ માત્ર પૂર્ણાંક મૂલ્ય દાખલ કરો</div>
+
+    <label>🔹 વેચાણ કિંમત (Sell Price)</label>
+    <input type="number" id="sellPrice" placeholder="e.g. 130.75" step="0.01" />
+
+    <label>🔹 વેચાણ યુનિટ (Sell Quantity)</label>
+    <input type="number" id="sellQty" placeholder="Only integer value" step="1" />
+    <div class="inline-error" id="sellQtyError">❌ માત્ર પૂર્ણાંક મૂલ્ય દાખલ કરો</div>
+
+    <button onclick="calculate()">🧮 ગણતરી કરો</button>
+
+    <div class="error" id="error" style="display:none;"></div>
+    <div class="result" id="result" style="display:none;"></div>
+  </div>
+
+  <!-- ✅ JS Logic -->
+  <script>
+    function goToCalculator() {
+      const name = document.getElementById("userName").value.trim();
+      if (name === "") {
+        alert("કૃપા કરીને તમારું નામ દાખલ કરો.");
+        return;
+      }
+
+      document.getElementById("nameContainer").style.display = "none";
+      document.getElementById("calculatorContainer").style.display = "block";
+      document.getElementById("displayUserName").innerText = `👤 વપરાશકર્તા: ${name}`;
+    }
+
+    document.getElementById("buyQty").addEventListener("input", function () {
+      const value = parseFloat(this.value);
+      document.getElementById("buyQtyError").style.display = (value % 1 !== 0) ? "block" : "none";
+    });
+
+    document.getElementById("sellQty").addEventListener("input", function () {
+      const value = parseFloat(this.value);
+      document.getElementById("sellQtyError").style.display = (value % 1 !== 0) ? "block" : "none";
+    });
+
+    function calculate() {
+      const buyPrice = document.getElementById("buyPrice").value.trim();
+      const buyQty = document.getElementById("buyQty").value.trim();
+      const sellPrice = document.getElementById("sellPrice").value.trim();
+      const sellQty = document.getElementById("sellQty").value.trim();
+
+      const errorDiv = document.getElementById("error");
+      const resultDiv = document.getElementById("result");
+
+      errorDiv.style.display = "none";
+      resultDiv.style.display = "none";
+
+      if (buyPrice === "" || buyQty === "" || sellPrice === "" || sellQty === "") {
+        errorDiv.style.display = "block";
+        errorDiv.innerText = "❌ કૃપા કરીને બધા ફીલ્ડમાં માન્ય મૂલ્યો દાખલ કરો.";
+        return;
+      }
+
+      const bp = parseFloat(buyPrice);
+      const bq = parseFloat(buyQty);
+      const sp = parseFloat(sellPrice);
+      const sq = parseFloat(sellQty);
+
+      if (!Number.isInteger(bq)) {
+        document.getElementById("buyQtyError").style.display = "block";
+        return;
+      }
+
+      if (!Number.isInteger(sq)) {
+        document.getElementById("sellQtyError").style.display = "block";
+        return;
+      }
+
+      const totalBuy = bp * bq;
+      const totalSell = sp * sq;
+      const benefit = totalSell - totalBuy;
+
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML = `
+        💰 કુલ ખરીદી રકમ: ₹${totalBuy.toFixed(2)}<br>
+        💸 કુલ વેચાણ રકમ: ₹${totalSell.toFixed(2)}<br>
+        📊 નફો / નુકશાન: ₹${benefit.toFixed(2)}
+      `;
+    }
+  </script>
 </body>
 </html>
