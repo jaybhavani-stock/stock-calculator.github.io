@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>જય ભવાની  સ્ટોક  કેલ્ક્યુલેટર</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+      color: #333;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #388e3c;
+    }
+    .result, .error {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .result {
+      background: #e0f7fa;
+    }
+    .error {
+      background: #ffebee;
+      color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><center>💹<b><i><u> જય ભવાની  સ્ટોક કેલ્ક્યુલેટર</u></i></b></center></h2>
+
+    <label>🔹 ખરીદ કિંમત (Buy Price)</label>
+    <input type="number" id="buyPrice" placeholder="e.g. 120.50" step="0.01">
+
+    <label>🔹 ખરીદ યુનિટ (Buy Quantity)</label>
+    <input type="number" id="buyQty" placeholder="Only integer value" step="1">
+
+    <label>🔹 વેચાણ કિંમત (Sell Price)</label>
+    <input type="number" id="sellPrice" placeholder="e.g. 130.75" step="0.01">
+
+    <label>🔹 વેચાણ યુનિટ (Sell Quantity)</label>
+    <input type="number" id="sellQty" placeholder="Only integer value" step="1">
+
+    <button onclick="calculate()">🧮 ગણતરી કરો</button>
+
+    <div class="error" id="error" style="display:none;"></div>
+    <div class="result" id="result" style="display:none;"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const buyPrice = parseFloat(document.getElementById("buyPrice").value);
+      const buyQty = parseFloat(document.getElementById("buyQty").value);
+      const sellPrice = parseFloat(document.getElementById("sellPrice").value);
+      const sellQty = parseFloat(document.getElementById("sellQty").value);
+
+      const errorDiv = document.getElementById("error");
+      const resultDiv = document.getElementById("result");
+      errorDiv.style.display = "none";
+      resultDiv.style.display = "none";
+
+      // Check for integer quantity
+      if (!Number.isInteger(buyQty) || !Number.isInteger(sellQty)) {
+        errorDiv.style.display = "block";
+        errorDiv.innerText = "❌ Quantity માં માત્ર પૂર્ણાંક (integer) મૂલ્ય જ દાખલ કરો.";
+        return;
+      }
+
+      const totalBuy = buyPrice * buyQty;
+      const totalSell = sellPrice * sellQty;
+      const benefit = totalSell - totalBuy;
+
+      resultDiv.style.display = "block";
+      resultDiv.innerHTML =  
+        💰 Total Buy Amount: ₹${totalBuy.toFixed(2)}<br>
+        💸 Total Sell Amount: ₹${totalSell.toFixed(2)}<br>
+        📊 Profit/Loss: ₹${benefit.toFixed(2)}
+      ;
+    }
+  </script>
+</body>
+</html>
