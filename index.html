@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>જય ભવાની  સ્ટોક  કેલ્ક્યુલેટર</title>
+  <title>જય ભવાની સ્ટોક કેલ્ક્યુલેટર</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -23,9 +23,16 @@
       width: 100%;
       padding: 10px;
       margin-top: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 5px;
       border: 1px solid #ccc;
       border-radius: 8px;
+    }
+    .inline-error {
+      color: #c62828;
+      font-size: 13px;
+      display: none;
+      text-align: right;
+      margin-bottom: 10px;
     }
     button {
       padding: 10px 20px;
@@ -52,23 +59,38 @@
       background: #ffebee;
       color: #c62828;
     }
+    .username {
+      font-size: 14px;
+      text-align: right;
+      color: #555;
+    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2><center>💹<b><i><u> જય ભવાની  સ્ટોક કેલ્ક્યુલેટર</u></i></b></center></h2>
+
+  <div class="container" id="nameContainer">
+    <h2><center>👤 તમારું નામ દાખલ કરો</center></h2>
+    <input type="text" id="userName" placeholder="તમારું નામ લખો">
+    <button onclick="goToCalculator()">શરૂ કરો</button>
+  </div>
+
+  <div class="container" id="calculatorContainer" style="display: none;">
+    <div class="username" id="displayUserName"></div>
+    <h2><center>💹<b><i><u>જય ભવાની સ્ટોક કેલ્ક્યુલેટર</u></i></b></center></h2>
 
     <label>🔹 ખરીદ કિંમત (Buy Price)</label>
     <input type="number" id="buyPrice" placeholder="e.g. 120.50" step="0.01">
 
     <label>🔹 ખરીદ યુનિટ (Buy Quantity)</label>
     <input type="number" id="buyQty" placeholder="Only integer value" step="1">
+    <div class="inline-error" id="buyQtyError">❌ માત્ર પૂર્ણાંક મૂલ્ય દાખલ કરો</div>
 
     <label>🔹 વેચાણ કિંમત (Sell Price)</label>
     <input type="number" id="sellPrice" placeholder="e.g. 130.75" step="0.01">
 
     <label>🔹 વેચાણ યુનિટ (Sell Quantity)</label>
     <input type="number" id="sellQty" placeholder="Only integer value" step="1">
+    <div class="inline-error" id="sellQtyError">❌ માત્ર પૂર્ણાંક મૂલ્ય દાખલ કરો</div>
 
     <button onclick="calculate()">🧮 ગણતરી કરો</button>
 
@@ -77,34 +99,72 @@
   </div>
 
   <script>
-    function calculate() {
-      const buyPrice = parseFloat(document.getElementById("buyPrice").value);
-      const buyQty = parseFloat(document.getElementById("buyQty").value);
-      const sellPrice = parseFloat(document.getElementById("sellPrice").value);
-      const sellQty = parseFloat(document.getElementById("sellQty").value);
-
-      const errorDiv = document.getElementById("error");
-      const resultDiv = document.getElementById("result");
-      errorDiv.style.display = "none";
-      resultDiv.style.display = "none";
-
-      // Check for integer quantity
-      if (!Number.isInteger(buyQty) || !Number.isInteger(sellQty)) {
-        errorDiv.style.display = "block";
-        errorDiv.innerText = "❌ Quantity માં માત્ર પૂર્ણાંક (integer) મૂલ્ય જ દાખલ કરો.";
+    function goToCalculator() {
+      const name = document.getElementById("userName").value.trim();
+      if (name === "") {
+        alert("કૃપા કરીને તમારું નામ દાખલ કરો.");
         return;
       }
 
-      const totalBuy = buyPrice * buyQty;
-      const totalSell = sellPrice * sellQty;
+      document.getElementById("nameContainer").style.display = "none";
+      document.getElementById("calculatorContainer").style.display = "block";
+      document.getElementById("displayUserName").innerText = `👤 વપરાશકર્તા: ${name}`;
+    }
+
+    // Real-time float validation
+    document.getElementById("buyQty").addEventListener("input", function () {
+      const value = parseFloat(this.value);
+      document.getElementById("buyQtyError").style.display = (value % 1 !== 0) ? "block" : "none";
+    });
+
+    document.getElementById("sellQty").addEventListener("input", function () {
+      const value = parseFloat(this.value);
+      document.getElementById("sellQtyError").style.display = (value % 1 !== 0) ? "block" : "none";
+    });
+
+    function calculate() {
+      const buyPrice = document.getElementById("buyPrice").value.trim();
+      const buyQty = document.getElementById("buyQty").value.trim();
+      const sellPrice = document.getElementById("sellPrice").value.trim();
+      const sellQty = document.getElementById("sellQty").value.trim();
+
+      const errorDiv = document.getElementById("error");
+      const resultDiv = document.getElementById("result");
+
+      errorDiv.style.display = "none";
+      resultDiv.style.display = "none";
+
+      if (buyPrice === "" || buyQty === "" || sellPrice === "" || sellQty === "") {
+        errorDiv.style.display = "block";
+        errorDiv.innerText = "❌ કૃપા કરીને બધા ફીલ્ડમાં માન્ય મૂલ્યો દાખલ કરો.";
+        return;
+      }
+
+      const bp = parseFloat(buyPrice);
+      const bq = parseFloat(buyQty);
+      const sp = parseFloat(sellPrice);
+      const sq = parseFloat(sellQty);
+
+      if (!Number.isInteger(bq)) {
+        document.getElementById("buyQtyError").style.display = "block";
+        return;
+      }
+
+      if (!Number.isInteger(sq)) {
+        document.getElementById("sellQtyError").style.display = "block";
+        return;
+      }
+
+      const totalBuy = bp * bq;
+      const totalSell = sp * sq;
       const benefit = totalSell - totalBuy;
 
       resultDiv.style.display = "block";
-      resultDiv.innerHTML =  
+      resultDiv.innerHTML = `
         💰 Total Buy Amount: ₹${totalBuy.toFixed(2)}<br>
         💸 Total Sell Amount: ₹${totalSell.toFixed(2)}<br>
-        📊 Profit/Loss: ₹${benefit.toFixed(2)}
-      ;
+        📊 Profit / Loss: ₹${benefit.toFixed(2)}
+      `;
     }
   </script>
 </body>
